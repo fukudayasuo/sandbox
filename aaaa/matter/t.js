@@ -1,6 +1,5 @@
 $(function() {
 	$('html').css('height', screen.height);
-	scrollTo(0, 1);
 });
 $(function() {
 	var $tsumuContainer = $('.tsumu .main');
@@ -71,8 +70,16 @@ $(function() {
 
 	// 傾き
 	window.addEventListener('deviceorientation', function(e) {
-		var x = e.beta; // X軸の傾き
-		$('.header').text(x);
+		var beta = e.beta; // X軸の傾き
+		var gamma = e.gamma; // Y軸の傾き
 
+		var tx = Math.sin(gamma / 180 * Math.PI);
+		var ty = Math.sin(beta / 180 * Math.PI);
+		engine.world.gravity = {
+			x : tx,
+			y : ty
+		};
+
+		$('.header').text('x:' + tx + '  y:' + ty);
 	});
 });
