@@ -1,3 +1,4 @@
+/************ common ************/
 html,body {
 	margin: 0;
 	padding: 0;
@@ -18,7 +19,6 @@ html,body {
 	height: 100%;
 	width: 100%;
 	box-sizing: border-box;
-	border: 2px solid #fc2;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -27,4 +27,47 @@ html,body {
 
 .hidden {
 	display: none !important;
+}
+
+.btn {
+	border: 1px solid #fc2;
+	cursor: pointer;
+}
+
+/************ pin ************/
+[data-state="game"] {
+	height: 100%;
+	position: relative;
+}
+
+.board-pin {
+	height: 100%;
+	background-color: #cef;
+}
+
+.board-pin .base {
+	background-color: #702B00;
+	box-sizing: border-box;
+	height: 5%;
+	width: 80%;
+	position: relative;
+	top: 95%;
+	margin: auto;
+}
+
+.board-pin svg {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+}
+
+.pin-body {
+	stroke: #aaa;
+	stroke-width: 5;
+	stroke-linecap: round;
+	box-shadow:0 0 4px #F00, 0 0 12px #000, 5px 5px 5px #000;
+}
+
+.pin-head {
+	fill: #c00;
 }

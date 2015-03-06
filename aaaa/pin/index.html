@@ -18,17 +18,39 @@
 </head>
 <body>
 	<div class="container">
-		<div class="scene main-scene">
-			<div class=""></div>
+		<div class="scene" data-state="main">
+			<div class="header">
+				<div class="horizonal-group">
+					<!--
+				<div class="btn btn-icon btn-tweet"></div>
+				 -->
+				</div>
+			</div>
+			<div class="vertical-group">
+				<div class="btn btn-wide start-btn changeStateBtn"
+					data-state-link="game">スタート</div>
+			</div>
 		</div>
-		<div class="scene game-scene hidden">
-			<canvas class="board"></canvas>
+		<div class="scene" data-state="game">
+			<div class="board-pin">
+				<svg></svg>
+				<div class="base"></div>
+			</div>
+		</div>
+		<div class="popup hidden">
+			<div class="btn btn-wide start-btn changeStateBtn"
+				data-state-link="result">リタイア</div>
 			<div class="controlls">
 				<div class="left-btn"></div>
 				<div class="right-btn"></div>
 			</div>
 		</div>
-		<div class="scene result-scene hidden"></div>
+		<div class="scene" data-state="result">
+			<div class="btn btn-wide start-btn changeStateBtn"
+				data-state-link="game">リトライ</div>
+			<div class="btn btn-wide start-btn changeStateBtn"
+				data-state-link="main">TOPへ</div>
+		</div>
 	</div>
 </body>
 </html>
