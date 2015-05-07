@@ -35,18 +35,17 @@
 			<div class="board-pin">
 				<svg></svg>
 				<div class="base"></div>
+				<div class="controlls">
+					<div class="left-btn"><span class="leftbtn-label btn-label">←</span></div>
+					<div class="right-btn"><span class="rightbtn-label btn-label">→</span></div>
+				</div>
 			</div>
 		</div>
-		<div class="popup hidden">
-			<div class="btn btn-wide start-btn changeStateBtn"
-				data-state-link="result">リタイア</div>
-			<div class="controlls">
-				<div class="left-btn"></div>
-				<div class="right-btn"></div>
+		<div class="overlay hidden gameover">
+			<div class="result">
+				スコア：<span class="score"></span>
 			</div>
-		</div>
-		<div class="scene" data-state="result">
-			<div class="btn btn-wide start-btn changeStateBtn"
+			<div class="btn btn-wide start-btn changeStateBtn retry"
 				data-state-link="game">リトライ</div>
 			<div class="btn btn-wide start-btn changeStateBtn"
 				data-state-link="main">TOPへ</div>

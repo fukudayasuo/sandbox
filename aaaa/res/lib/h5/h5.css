@@ -15,19 +15,29 @@
  * limitations under the License.
  *
  * hifive css
- *   version 1.10.0
- *   gitCommitId : 626d59a5628a832665e5d6cf06f591311700b7f4
- *   build at 2014/05/13 11:29:20.057 (+0900)
- *   (util,controller,modelWithBinding,view,ui,api.geo,api.sqldb,api.storage)
+ *   version Nightly_2015-04-24_11-03-03-383
+ *   gitCommitId : 8192e0464c707235e39068c51ce280bfb2a6b634
+ *   build at 2015/04/24 11:03:09.750 (+0900)
+ *   (util,async,resource,controller,dataModel,modelWithBinding,view,ui,api.geo,api.sqldb,api.storage,scene)
  */
-
-
 /* インジケータ オーバーレイDIV,メッセージDIV 共通設定 */
 .h5-indicator {
 	text-align: center;
 	padding: 5px 10px 5px 10px;
 	white-space: nowarp;
 	cursor: wait;
+}
+
+/* インジケータ オーバレイDIV */
+.h5-indicator.overlay {
+	height: 100%;
+	width: 100%;
+	border: none;
+	margin: 0px;
+	padding: 0px;
+	top: 0;
+	left: 0;
+	z-index: 1001;
 }
 
 /* インジケータメッセージDIV - スロバーSPAN */
@@ -114,7 +124,7 @@ div.a.throbber-line {
 }
 
 /** no-prefix (IE10) */
-@-keyframes rotateThrobber {
+@keyframes rotateThrobber {
     from {transform: rotate(0deg);}
     to {transform: rotate(360deg);}
 }
@@ -164,14 +174,6 @@ div.a.throbber-line {
 	background-color: #000;
 	opacity: 0.6;
 	filter: alpha(opacity=60);
-	height: 100%;
-	width: 100%;
-	border: none;
-	margin: 0px;
-	padding: 0px;
-	top: 0;
-	left: 0;
-	z-index: 1001;
 }
 
 /* メッセージDIV */

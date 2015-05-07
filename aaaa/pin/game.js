@@ -142,6 +142,10 @@
 	var PIN_VX = 1;
 	/** pinの鉛直移動速度 */
 	var PIN_VY = 0.02;
+	/** leftキー */
+	var KEY_LEFT = 37;
+	/** righttキー */
+	var KEY_RIGHT = 39;
 
 	/** 1秒当たりのフレーム数 */
 	var FPS = 60;
@@ -163,10 +167,13 @@
 				_score: 0,
 				_data: {},
 				_isGameOver: false,
-				__ready: function() {
-					// setup
+				_$controllLeft: null,
+				_$controllRight: null,
+				__init: function() {
 					this._$board = this.$find('.board');
 					this._$svg = this.$find('svg');
+					this._$controllLeft = this.$find('.left-btn');
+					this._$controllRight = this.$find('.right-btn');
 					// svgの設定
 					this._$svg.attr({
 						height: VH,
@@ -177,21 +184,43 @@
 				},
 				'{window} keydown': function(ctx) {
 					var key = ctx.event.keyCode;
+					if (key === KEY_LEFT) {
+						// 左キー
+						this._onLeftKey();
+					} else if (key === KEY_RIGHT) {
+						// 右キー
+						this._onRightKey();
+					}
+				},
+				'{this._$controllLeft} mousedown': function() {
+					this._onLeftKey();
+				},
+				'{this._$controllLeft} touchstart': function() {
+					this._onLeftKey();
+				},
+				'{this._$controllRight} mousedown': function() {
+					this._onRightKey();
+				},
+				'{this._$controllRight} touchstart': function() {
+					this._onRightKey();
+				},
+				_onLeftKey: function() {
 					if (this._isGameOver) {
 						return;
 					}
 					var data = this._data;
-					if (key === 37) {
-						// 左キー
-						data.lastInput = 'left';
-						data.keyLeft = true;
-					} else if (key === 39) {
-						// 右キー
-						data.lastInput = 'right';
-						data.keyRight = true;
-					} else {
-						data.lasntInput = null;
+					data.lastInput = 'left';
+					data.keyLeft = true;
+					this._$controllLeft.addClass('clicked');
+				},
+				_onRightKey: function() {
+					if (this._isGameOver) {
+						return;
 					}
+					var data = this._data;
+					data.lastInput = 'right';
+					data.keyRight = true;
+					this._$controllRight.addClass('clicked');
 				},
 				'{window} keyup': function(ctx) {
 					// キーを上げた時に左右どちらかが押されていたらlastInputを更新
@@ -199,16 +228,46 @@
 						return;
 					}
 					var key = ctx.event.keyCode;
-					var data = this._data;
-					if (key === 37) {
+					if (key === KEY_LEFT) {
 						// 左キー
-						data.keyLeft = false;
-						data.lastInput = data.keyRight ? 'right' : null;
-					} else if (key === 39) {
+						this._offLeftKey();
+					} else if (key === KEY_RIGHT) {
 						// 右キー
-						data.keyRight = false;
-						data.lastInput = data.keyLeft ? 'left' : null;
+						this._offRightKey();
 					}
+				},
+				'{this._$controllLeft} mouseup': function() {
+					this._offLeftKey();
+				},
+				'{this._$controllLeft} touchend': function() {
+					this._offLeftKey();
+				},
+				'{this._$controllRight} mouseup': function() {
+					this._offRightKey();
+				},
+				'{this._$controllRight} touchend': function() {
+					this._offRightKey();
+				},
+				_offLeftKey: function() {
+					if (this._isGameOver) {
+						return;
+					}
+					var data = this._data;
+					data.keyLeft = false;
+					data.lastInput = data.keyRight ? 'right' : null;
+					this._$controllLeft.removeClass('clicked');
+				},
+				_offRightKey: function() {
+					if (this._isGameOver) {
+						return;
+					}
+					var data = this._data;
+					data.keyRight = false;
+					data.lastInput = data.keyLeft ? 'left' : null;
+					this._$controllRight.removeClass('clicked');
+				},
+				'{.retry} click': function() {
+					this.load();
 				},
 				load: function() {
 					pin.utils.adjustScreen();
@@ -222,7 +281,7 @@
 					var actualHeight = this._$board.innerHeight();
 					var actualWidth = this._$board.innerWidth();
 					var data = this._data;
-					data.pinPosition = data.pinPosition || {
+					data.pinPosition = {
 						bottomX: VW / 2,
 						topX: 0
 					};
@@ -254,6 +313,11 @@
 					// スコアのリセット
 					this._score = 0;
 					this._isGameOver = false;
+
+					// 入力キーのリセット
+					data.lastInput = null;
+					data.leftKey = null;
+					data.rightKey = null;
 
 					this._timer = setInterval(this.own(this._loop), 1000 / FPS);
 				},
@@ -323,15 +387,16 @@
 					clearInterval(this._timer);
 					this._timer = null;
 					this._isGameOver = true;
-					// TODO ゲームオーバ画面表示
-					alert('ゲームオーバー。スコア：' + this._score + '点')
+					// ゲームオーバ画面表示
+					$('.score').text(this._score);
+					this.trigger('overlay', 'gameover');
 				}
 			});
 })();
 
 (function() {
 	h5.core.expose({
-		__name: 'pin.controller.ResultController',
+		__name: 'pin.controller.GameOverController',
 		load: function() {
 			console.log(this.__name);
 		}
@@ -343,7 +408,7 @@
 		__name: 'pin.controller.PageController',
 		mainController: pin.controller.MainController,
 		gameController: pin.controller.GameController,
-		resultController: pin.controller.ResultController,
+		gameOverController: pin.controller.GameOverController,
 		stateBoxController: h5.ui.container.StateBox,
 		__meta: {
 			mainController: {
@@ -352,8 +417,8 @@
 			gameController: {
 				rootElement: '[data-state="game"]'
 			},
-			resultController: {
-				rootElement: '[data-state="result"]'
+			gameOverController: {
+				rootElement: '.gameover'
 			}
 		},
 		_indicator: null,
@@ -368,18 +433,23 @@
 		/**
 		 * state遷移
 		 */
-		'.changeStateBtn click': function(context, $el) {
+		'.changeStateBtn click': function(ctx, $el) {
 			this.trigger('setState', $el.data('state-link'));
 		},
-		'{rootElement} setState': function(context) {
-			var state = context.evArg;
+		'{rootElement} setState': function(ctx) {
+			var state = ctx.evArg;
+			this.$find('.overlay').addClass('hidden');
 			this.stateBoxController.setState(state);
+		},
+		'{rootElement} overlay': function(ctx) {
+			var overlay = ctx.evArg;
+			this.$find('.' + overlay).removeClass('hidden');
 		},
 		/**
 		 * stateの変更通知イベント
 		 */
-		'{rootElement} stateChange': function(context) {
-			var states = context.evArg;
+		'{rootElement} stateChange': function(ctx) {
+			var states = ctx.evArg;
 			var current = states[0];
 			var pre = states[1];
 			var preCtrl = this[pre + 'Controller'];

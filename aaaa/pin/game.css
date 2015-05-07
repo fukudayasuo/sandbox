@@ -15,7 +15,7 @@ html,body {
 	margin: auto;
 }
 
-.scene {
+.scene,.overlay {
 	height: 100%;
 	width: 100%;
 	box-sizing: border-box;
@@ -25,13 +25,63 @@ html,body {
 	transition: display 0.1s ease-in-out
 }
 
+.overlay {
+	background-color: rgba(0, 0, 0, 0.2);
+}
+
+.result {
+	background-color: #fff;
+}
+
 .hidden {
 	display: none !important;
 }
 
 .btn {
 	border: 1px solid #fc2;
+	background-color: #fff;
 	cursor: pointer;
+}
+
+.controlls {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	color: #fff;
+	height: 100%;
+	vertical-align: bottom;
+	cursor: pointer;
+}
+
+.controlls .left-btn {
+	float: left;
+	display: inline-block;
+	width: 50%;
+	height: 100%;
+}
+
+.controlls .right-btn {
+	float: right;
+	display: inline-block;
+	width: 50%;
+	text-align: right;
+	height: 100%;
+}
+
+.controlls .clicked .btn-label {
+	color: rgba(255, 255, 255, 0.9);
+}
+
+.controlls .btn-label {
+	font-size: 3em;
+	position: absolute;
+	display: block;
+	bottom: 0;
+	color: rgba(255, 255, 255, 0.7);
+}
+
+.controlls .rightbtn-label.btn-label {
+	right: 0;
 }
 
 /************ pin ************/
