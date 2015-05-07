@@ -65,7 +65,7 @@ html,body {
 	stroke: #aaa;
 	stroke-width: 5;
 	stroke-linecap: round;
-	box-shadow:0 0 4px #F00, 0 0 12px #000, 5px 5px 5px #000;
+	box-shadow: 0 0 4px #F00, 0 0 12px #000, 5px 5px 5px #000;
 }
 
 .pin-head {
