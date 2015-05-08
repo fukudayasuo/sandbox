@@ -146,6 +146,12 @@
 	var KEY_LEFT = 37;
 	/** righttキー */
 	var KEY_RIGHT = 39;
+	/** 敵機襲来頻度(フレーム数) */
+	var ENEMY_FREQUENCY = 100;
+	/** 敵機の速度 */
+	var ENEMY_SPEED = 1;
+	/** 敵機のサイズ */
+	var ENEMY_SIZE = 30;
 
 	/** 1秒当たりのフレーム数 */
 	var FPS = 60;
@@ -162,6 +168,8 @@
 				_$svg: null,
 				_$pinBody: null,
 				_$pinHead: null,
+				_enemiesData: null,
+				_$enemies: null,
 				_timer: null,
 				_time: 0,
 				_score: 0,
@@ -182,6 +190,10 @@
 					// $.attrは属性名の大文字小文字を無視するのでネイティブで設定
 					this._$svg[0].setAttribute('viewBox', '0 0 ' + VW + ' ' + VH);
 				},
+
+				// -----------------------------------
+				// 操作ここから
+				// -----------------------------------
 				'{window} keydown': function(ctx) {
 					var key = ctx.event.keyCode;
 					if (key === KEY_LEFT) {
@@ -266,6 +278,10 @@
 					data.lastInput = data.keyLeft ? 'left' : null;
 					this._$controllRight.removeClass('clicked');
 				},
+				// -----------------------------------
+				// 操作ここまで
+				// -----------------------------------
+
 				'{.retry} click': function() {
 					this.load();
 				},
@@ -319,12 +335,16 @@
 					data.leftKey = null;
 					data.rightKey = null;
 
+					// 敵機のリセット
+					this._enemiesData = [];
+					this._$enemies && this._$enemies.remove();
+					this._$enemies = $();
+
 					this._timer = setInterval(this.own(this._loop), 1000 / FPS);
 				},
 				endGame: function() {
 					clearTimeout(this._timer);
 					this._data = {};
-					// resultに遷移
 				},
 				_refreshPinPosition: function() {
 					// 自機を描画
@@ -348,6 +368,65 @@
 						cy: bottomY + topY
 					});
 					return ret;
+				},
+				_calcEnemy: function(x) {
+					var datas = this._enemiesData;
+					var time = this._time;
+					// 位置の更新
+					for (var i = 0, l = datas.length; i < l; i++) {
+						var data = datas[i];
+						// 5秒ごとに0.1加速
+						data.y += ENEMY_SPEED + time / (FPS * 50);
+					}
+					var lastIndex = datas.length - 1;
+					var $enemies = this._$enemies;
+					$enemies.each(function(index, elem) {
+						var data = datas[index];
+						if (index === lastIndex && VH <= datas[lastIndex].y) {
+							// 見えなくなったものは削除
+							datas.pop();
+							$(elem).remove();
+							$enemies.splice(lastIndex - 1);
+							return false;
+						}
+						elem.setAttribute('d', h5.u.str.format('M {0} {1} l 0 {2}', data.x, data.y,
+								ENEMY_SIZE));
+
+					});
+					if (time % ENEMY_FREQUENCY === 0) {
+						// 敵機作成
+						var data = {
+							x: x,
+							y: -ENEMY_SIZE
+						};
+						var $enemy = createSvgDrawingElement('path', {
+							attr: {
+								'class': 'enemy',
+								d: h5.u.str.format('M {0} {1} l 0 {2}', x, -ENEMY_SIZE, ENEMY_SIZE)
+							}
+						});
+						this._$svg.append($enemy);
+						this._$enemies = $enemies.add($enemy);
+						datas.push(data);
+					}
+				},
+				/**
+				 * あたり判定
+				 */
+				_doCollision: function(headX, headY) {
+					var datas = this._enemiesData;
+					for (var i = 0, l = datas.length; i < l; i++) {
+						var data = datas[i];
+						// 距離で判定
+						// 敵機の両端で計算
+						var dy = headY - data.y;
+						var dx = headX - data.x;
+						if ((Math.sqrt(dy * dy + dx * dx) < PIN_RADIUS)
+								|| (Math.sqrt((dy - ENEMY_SIZE) * (dy - ENEMY_SIZE) + dx * dx) < PIN_RADIUS)) {
+							return true;
+						}
+					}
+					return false;
 				},
 				_loop: function() {
 					var data = this._data;
@@ -377,11 +456,25 @@
 						this._gameOver();
 						return;
 					}
+
+					// 敵の移動と生成
+					var headX = pinPosition.bottomX + pinPosition.topX;
+					this._calcEnemy(headX);
+
 					// 敵との当たり判定
-					// TODO
+					var headY = VH
+							* 0.95
+							- Math.sqrt(PIN_LENGTH * PIN_LENGTH - pinPosition.topX
+									* pinPosition.topX);
+					if (this._doCollision(headX, headY)) {
+						this._gameOver();
+						return;
+					}
 
 					// スコア
 					this._score++;
+					// タイム
+					this._time++;
 				},
 				_gameOver: function() {
 					clearInterval(this._timer);

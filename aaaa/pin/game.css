@@ -53,6 +53,10 @@ html,body {
 	cursor: pointer;
 }
 
+.controlls * {
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
 .controlls .left-btn {
 	float: left;
 	display: inline-block;
@@ -111,13 +115,19 @@ html,body {
 	width: 100%;
 }
 
-.pin-body {
+.board-pin svg .pin-body {
 	stroke: #aaa;
 	stroke-width: 5;
 	stroke-linecap: round;
 	box-shadow: 0 0 4px #F00, 0 0 12px #000, 5px 5px 5px #000;
 }
 
-.pin-head {
+.board-pin svg .pin-head {
 	fill: #c00;
+}
+
+.board-pin svg .enemy {
+	stroke: #ccc;
+	stroke-width: 3;
+	stroke-linecap: butt;
 }
